@@ -2,6 +2,11 @@ const express = require("express");
 
 const app = express();
 
+app.use(express.json())
+
+const mongoose = require("mongoose")
+
+// hello world test function
 app.get("/", (request, response) => {
 	response.json({
 		message: "Hello, world!"
@@ -19,7 +24,7 @@ app.get("*", (request, response) => {
 });
 
 
-// Catch all error occurred
+// Catch all errors that have occurred
 app.use((error, request, response, next) => {
 	console.log("Error occured in the server.");
 	console.log(JSON.stringify(error));

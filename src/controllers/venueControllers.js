@@ -1,5 +1,5 @@
 // name address phone price (PK, genre id, location id)
-const venueRouter = require("../routes/venueRoutes")
+// const venueRouter = require("../routes/venueRoutes")
 
 const venues = [
     {
@@ -21,5 +21,5 @@ function getvenues() {
 }
 
 module.exports = {
-    venueRouter
+    getvenues
 }
