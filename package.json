@@ -1,0 +1,22 @@
+{
+  "name": "touring-artist-back-end",
+  "version": "1.0.0",
+  "description": "Touring Arist is an application built for artists booking venues. Created as part of study at CoderAcademy with Tanya Chukau.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/utils/seed.js",
+    "wipe": "node src/utils/wipe.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.1"
+  }
+}
