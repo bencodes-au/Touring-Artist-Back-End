@@ -1,10 +1,8 @@
 const express = require("express");
-
+const venueRouter = require("./routes/venueRoutes");
 const app = express();
 
 app.use(express.json())
-
-const mongoose = require("mongoose")
 
 // hello world test function
 app.get("/", (request, response) => {
@@ -13,6 +11,7 @@ app.get("/", (request, response) => {
 	});
 });
 
+app.use("/venues", venueRouter)
 
 // Catches routes that do not match
 app.get("*", (request, response) => {

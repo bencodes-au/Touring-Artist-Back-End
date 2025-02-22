@@ -2,9 +2,9 @@ const dotenv = require("dotenv")
 dotenv.config()
 
 const { app } = require("./server");
-
 const venueRouter = require("./routes/venueRoutes");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+
 app.use("/venues", venueRouter)
 
 // consider moving port functionality into main.js which will control database connections 
