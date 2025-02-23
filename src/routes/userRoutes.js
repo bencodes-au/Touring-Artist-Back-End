@@ -22,7 +22,17 @@ userRouter.post("/register", async (request, response) => {
     }
 })
 
-// login - ? 
-// function - body - if/else correct
+userRouter.post("/login", async (req, res) => {
+    const bodyData = {
+        email: req.body.email,
+        password: req.body.password
+    }
+    const token = await loginUser(bodyData)
+    if (token.error) {
+        res.status(401).json(token)
+    } else {
+        res.json(token)
+    }
+})
 
 module.exports = userRouter

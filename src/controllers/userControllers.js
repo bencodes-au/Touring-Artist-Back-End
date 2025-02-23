@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken")
 const User = require("../models/user")
 
 async function registerUser(user) {
-    // // check for existing username and email
+    // check for existing username and email
     const existingEmail = await User.findOne({ email: user.email})
     if (existingEmail) {
         return { error: "Email already in use"}
@@ -32,14 +32,24 @@ async function registerUser(user) {
     return { token: token, user_id: userCreated._id }
 }
 
-async function loginUser(user){
+async function loginUser(user) {
     // check if user exists
-
-    // check if password matches
-
+    const existingUser = await User.findOne({ email: user.email })
+    if (!existingUser) {
+        return { error: "Email or password is incorrect" }
+    }
+    // check if the password matches
+    const isMatch = await bcrypt.compare(user.password, existingUser.password)
+    if (!isMatch) {
+        return { error: "Email or password is incorrect" }
+    }
     // create the token
-
+    const payload = {
+        id: existingUser._id
+    }
+    const token = jwt.sign(payload, "secret")
     // return the token
+    return { token, user_id: existingUser._id }
 }
 
 module.exports = {
