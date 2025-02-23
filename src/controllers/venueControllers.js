@@ -5,17 +5,30 @@ async function getVenues() {
     return venues
 }
 
-// async function createVenue(bodyData) {
-//     const newVenue = await VenueModel.create(bodyData)
-//     return newVenue
-// }
+async function getVenue(venueId) {
+    const venue = await VenueModel.findById(venueId)
+    return venue
+}
 
 async function createVenue(venue) {
     const newVenue = await VenueModel.create(venue)
     return newVenue
 }
 
+async function updateVenue(venueId, bodyData) {
+    const updatedVenue = await VenueModel.findByIdAndUpdate(venueId, bodyData, { new: true})
+    return updatedVenue
+}
+
+async function deleteVenue(venueId) {
+    const deletedVenue = await VenueModel.findByIdAndDelete(venueId)
+    return deletedVenue
+}
+
 module.exports = {
     getVenues,
-    createVenue
+    getVenue,
+    createVenue,
+    deleteVenue,
+    updateVenue
 }
