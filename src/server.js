@@ -1,5 +1,6 @@
 const express = require("express");
 const venueRouter = require("./routes/venueRoutes");
+const userRouter = require("./routes/userRoutes")
 const app = express();
 
 app.use(express.json())
@@ -12,6 +13,7 @@ app.get("/", (request, response) => {
 });
 
 app.use("/venues", venueRouter)
+app.use("/users", userRouter)
 
 // Catches routes that do not match
 app.get("*", (request, response) => {

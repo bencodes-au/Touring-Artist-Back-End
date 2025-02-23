@@ -40,7 +40,7 @@ venueRouter.post("/", async (request, response) => {
     response.json(newVenue)
 })
 
-// PATCH Venue
+// Update Venue
 venueRouter.patch("/:venueId", async (request, response) => {
     const updatedVenue = await updateVenue(request.params.venueId, request.body)
     if (updatedVenue) {
