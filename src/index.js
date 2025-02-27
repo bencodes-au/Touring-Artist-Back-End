@@ -1,9 +1,9 @@
 const dotenv = require("dotenv")
 dotenv.config()
 
-const { app } = require("./server");
-const venueRouter = require("./routes/venueRoutes");
-const mongoose = require("mongoose");
+const { app } = require("./server")
+const venueRouter = require("./routes/venueRoutes")
+const mongoose = require("mongoose")
 
 app.use("/venues", venueRouter)
 

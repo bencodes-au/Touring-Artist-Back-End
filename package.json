@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "seed": "node src/utils/seed.js",
-    "wipe": "node src/utils/wipe.js"
+    "seed": "node src/scripts/seedDatabase.js",
+    "wipe": "node src/utils/wipe.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,9 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

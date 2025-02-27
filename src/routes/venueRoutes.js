@@ -23,7 +23,7 @@ venueRouter.get("/:venueId", async (request, response) => {
     if (venue) {
         response.json(venue)
     } else {
-        response.status(404).json({error: 'Venue with id ${req.params.postId} not found'})
+        response.status(404).json({error: `Venue with id ${req.params.postId} not found`})
     }
 })
 
@@ -33,7 +33,9 @@ venueRouter.post("/", async (request, response) => {
         name: request.body.name,
         address: request.body.address,
         phone: request.body.phone,
-        price: request.body.price
+        price: request.body.price,
+        genre: request.body.genre,
+        location: request.body.location
     }
 
     const newVenue = await createVenue(bodyData)
