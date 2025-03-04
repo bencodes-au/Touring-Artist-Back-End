@@ -23,7 +23,7 @@ venueRouter.get("/:venueId", async (request, response) => {
     if (venue) {
         response.json(venue)
     } else {
-        response.status(404).json({error: `Venue with id ${req.params.postId} not found`})
+        response.status(404).json({error: `Venue with id ${req.params.venueId} not found`})
     }
 })
 
@@ -58,7 +58,7 @@ venueRouter.delete("/:venueId", async (request, response) => {
     if (deletedVenue) {
         response.json(deletedVenue)
     } else {
-        response.status(404).json({error: `Venue with id ${request.params.postId} not found`})
+        response.status(404).json({error: `Venue with id ${request.params.venueId} not found`})
     }
 })
 

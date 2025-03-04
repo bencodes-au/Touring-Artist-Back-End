@@ -1,4 +1,6 @@
 const VenueModel = require("../models/venue")
+const Genre = require("../models/genre")
+const Location = require("../models/location")
 
 async function getVenues() {
     const venues = await VenueModel.find()
