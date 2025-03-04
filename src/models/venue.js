@@ -6,8 +6,16 @@ const VenueSchema = mongoose.Schema(
     address: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
     price: { type: String, required: true, unique: false },
-    genre: { type: mongoose.Types.ObjectId, ref: "Genre" },
-    location: { type: mongoose.Types.ObjectId, ref: "Location" },
+    genre: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Genre",
+      required: false,
+    },
+    location: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Location",
+      required: true,
+    },
   },
   { timestamps: true }
 );

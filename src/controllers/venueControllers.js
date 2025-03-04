@@ -18,7 +18,7 @@ async function getVenue(venueId) {
   try {
     const venue = await VenueModel.findById(venueId);
     if (!venue) {
-      throw new Error("Venue not found");
+      throw new Error(`Venue with id ${request.params.venueId} not found`);
     }
     return venue;
   } catch (error) {
@@ -43,7 +43,7 @@ async function updateVenue(venueId, bodyData) {
       new: true,
     });
     if (!updatedVenue) {
-      throw new Error("Venue not found");
+      throw new Error(`Venue with id ${request.params.venueId} not found`);
     }
     return updatedVenue;
   } catch (error) {
@@ -56,7 +56,7 @@ async function deleteVenue(venueId) {
   try {
     const deletedVenue = await VenueModel.findByIdAndDelete(venueId);
     if (!deletedVenue) {
-      throw new Error("Venue not found");
+      throw new Error(`Venue with id ${request.params.venueId} not found`);
     }
     return deletedVenue;
   } catch (error) {

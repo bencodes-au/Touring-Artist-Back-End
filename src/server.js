@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const venueRouter = require("./routes/venueRoutes");
 const userRouter = require("./routes/userRoutes");
+const bookingRouter = require("./routes/bookingRoutes");
 const app = express();
 
 app.use(express.json());
@@ -9,6 +10,7 @@ app.use(cors());
 
 app.use("/venues", venueRouter);
 app.use("/users", userRouter);
+app.use("/bookings", bookingRouter);
 
 // hello world test function
 app.get("/", (request, response) => {
