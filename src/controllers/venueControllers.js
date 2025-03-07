@@ -1,12 +1,8 @@
 const VenueModel = require("../models/venue");
-const Genre = require("../models/genre");
-const Location = require("../models/location");
 
 async function getVenues() {
   try {
-    const venues = await VenueModel.find()
-      .populate("genre")
-      .populate("location");
+    const venues = await VenueModel.find();
     return venues;
   } catch (error) {
     console.error("Error in getVenues:", error.message);
