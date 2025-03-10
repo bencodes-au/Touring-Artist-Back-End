@@ -1,5 +1,12 @@
 const express = require("express");
-const { registerUser, loginUser } = require("../controllers/userControllers");
+const {
+  registerUser,
+  loginUser,
+  getUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+} = require("../controllers/userControllers");
 
 const userRouter = express.Router();
 
@@ -37,4 +44,60 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
+// Get Users (Get all users)
+userRouter.get("/", async (request, response) => {
+  try {
+    const users = await getUsers();
+    response.status(200).json(users);
+  } catch (error) {
+    console.error("Error in GET /users:", error.message);
+    response.status(500).json({ error: "Failed to retrieve users" });
+  }
+});
+
+// Get User by ID
+userRouter.get("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await getUser(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error in GET /:id:", error.message);
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
+
+// Update User by ID
+userRouter.put("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updatedData = req.body;
+    const updatedUser = await updateUser(userId, updatedData);
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error in PUT /:id:", error.message);
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
+
+// Delete User by ID
+userRouter.delete("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const deletedUser = await deleteUser(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error in DELETE /:id:", error.message);
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
 module.exports = userRouter;

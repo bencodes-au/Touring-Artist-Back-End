@@ -29,35 +29,13 @@ async function getBooking(bookingId) {
   }
 }
 
-async function createBooking(req, res) {
-  const { venue, date, artist, paidUpfront, user } = req.body;
-
+async function createBooking(booking) {
   try {
-    // Check if there is already a booking for the same venue and date
-    const existingBooking = await BookingModel.findOne({ venue, date });
-
-    if (existingBooking) {
-      // If booking exists, return error message
-      return res
-        .status(400)
-        .json({ error: "This venue has been booked on this date." }); // Send error message to frontend
-    }
-
-    // Create the new booking if no conflicts
-    const newBooking = new BookingModel({
-      venue,
-      date,
-      artist,
-      paidUpfront,
-      user,
-    });
-
-    await newBooking.save();
-
-    res.status(201).json({ message: "Booking successful!" }); // Success response
+    const newBooking = await BookingModel.create(booking);
+    return newBooking;
   } catch (error) {
-    console.error("Error creating booking:", error);
-    res.status(500).json({ error: "There was an error making the booking." });
+    console.error("Error in createBooking:", error.message);
+    throw new Error("Failed to create booking");
   }
 }
 
