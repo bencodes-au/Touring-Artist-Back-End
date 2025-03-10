@@ -1,89 +1,97 @@
-jest.setTimeout(10000);
-
 const request = require("supertest");
-const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const app = require("../server");
-let mongoServer;
+const express = require("express");
+const userRouter = require("../routes/userRoutes");
+const UserModel = require("../models/user");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
+jest.mock("../models/user");
+jest.mock("bcrypt");
+jest.mock("jsonwebtoken");
 
-  await mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+const app = express();
+app.use(express.json());
+app.use("/users", userRouter);
+
+describe("User Authentication Routes", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  const genre = await Genre.create({ name: "Rock" });
-  const location = await Location.create({ name: "New York" });
+  test("POST /users/register - should register a new user", async () => {
+    const newUser = {
+      username: "testuser",
+      phone: "1234567890",
+      email: "test@example.com",
+      password: "password123",
+    };
+    const hashedPassword = "hashedpassword123";
+    const mockUser = { _id: "1", ...newUser, password: hashedPassword };
 
-  global.genreId = genre._id;
-  global.locationId = location._id;
-});
+    UserModel.findOne.mockResolvedValue(null); // No existing user
+    bcrypt.hash.mockResolvedValue(hashedPassword);
+    UserModel.create.mockResolvedValue(mockUser);
+    jwt.sign.mockReturnValue("mockedToken");
 
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+    const response = await request(app).post("/users/register").send(newUser);
+    expect(response.status).toBe(201);
+    expect(response.body).toEqual({ token: "mockedToken", user_id: "1" });
+  });
 
-describe("User Registration & Login", () => {
-  it("should register a new user", async () => {
-    const res = await request(app).post("/users/register").send({
+  test("POST /users/register - should return 409 if email is already in use", async () => {
+    UserModel.findOne.mockResolvedValue({ email: "test@example.com" });
+
+    const response = await request(app).post("/users/register").send({
       username: "testuser",
       email: "test@example.com",
       password: "password123",
     });
-
-    expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("token");
-    expect(res.body).toHaveProperty("user_id");
+    expect(response.status).toBe(409);
+    expect(response.body.message).toBe("Email already in use");
   });
 
-  it("should not allow duplicate email registration", async () => {
-    const res = await request(app).post("/users/register").send({
-      username: "anotheruser",
-      email: "test@example.com",
-      password: "newpassword123",
-    });
-
-    expect(res.statusCode).toBe(409);
-    expect(res.body).toHaveProperty("message", "Email already in use");
-  });
-
-  it("should login with correct credentials", async () => {
-    const res = await request(app).post("/users/login").send({
+  test("POST /users/login - should log in a user with correct credentials", async () => {
+    const userCredentials = {
       email: "test@example.com",
       password: "password123",
-    });
+    };
+    const hashedPassword = "hashedpassword123";
+    const mockUser = { _id: "1", ...userCredentials, password: hashedPassword };
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("token");
+    UserModel.findOne.mockResolvedValue(mockUser);
+    bcrypt.compare.mockResolvedValue(true);
+    jwt.sign.mockReturnValue("mockedToken");
+
+    const response = await request(app)
+      .post("/users/login")
+      .send(userCredentials);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ token: "mockedToken", user_id: "1" });
   });
 
-  it("should reject login with incorrect credentials", async () => {
-    const res = await request(app).post("/users/login").send({
+  test("POST /users/login - should return 401 for incorrect password", async () => {
+    UserModel.findOne.mockResolvedValue({
       email: "test@example.com",
-      password: "wrongpassword123",
+      password: "hashedpassword123",
     });
+    bcrypt.compare.mockResolvedValue(false);
 
-    expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty(
-      "message",
-      "Email or password is incorrect"
-    );
+    const response = await request(app).post("/users/login").send({
+      email: "test@example.com",
+      password: "wrongpassword",
+    });
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Email or password is incorrect");
   });
 
-  it("should reject login if the email does not exist", async () => {
-    const res = await request(app).post("/users/login").send({
-      email: "nonexistent@example.com",
+  test("POST /users/login - should return 401 if user is not found", async () => {
+    UserModel.findOne.mockResolvedValue(null);
+
+    const response = await request(app).post("/users/login").send({
+      email: "notfound@example.com",
       password: "password123",
     });
-
-    expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty(
-      "message",
-      "Email or password is incorrect"
-    );
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Email or password is incorrect");
   });
 });

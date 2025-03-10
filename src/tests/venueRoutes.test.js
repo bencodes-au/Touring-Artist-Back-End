@@ -1,71 +1,102 @@
-jest.setTimeout(10000);
-
 const request = require("supertest");
-const mongoose = require("mongoose");
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const app = require("../server");
-const Genre = require("../models/genre");
-const Location = require("../models/location");
-const Venue = require("../models/venue");
+const express = require("express");
+const venueRouter = require("../routes/venueRoutes");
+const VenueModel = require("../models/venue");
 
-let mongoServer;
+jest.mock("../models/venue");
 
-beforeAll(async () => {
-  // Start an in-memory MongoDB server
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-
-  // Connect to the in-memory MongoDB server for testing
-  await mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  // Create some test genres and locations to use in the tests
-  const genre = await Genre.create({ name: "Rock" });
-  const location = await Location.create({
-    name: "New York",
-    city: "New York",
-  });
-
-  // Store the genre and location IDs for use in tests
-  global.genreId = genre._id;
-  global.locationId = location._id;
-});
-
-afterAll(async () => {
-  // Close the Mongoose connection and stop the in-memory MongoDB server
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+const app = express();
+app.use(express.json());
+app.use("/venues", venueRouter);
 
 describe("Venue Routes", () => {
-  it("should create a new venue", async () => {
-    const res = await request(app).post("/venues").send({
-      name: "Madison Square Garden",
-      address: "4 Pennsylvania Plaza, New York, NY 10001",
-      phone: "212-465-6741", // Example phone
-      price: "500", // Example price
-      genre: global.genreId, // Pass ObjectId for genre
-      location: global.locationId, // Pass ObjectId for location
-    });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("name", "Madison Square Garden");
-    expect(res.body).toHaveProperty("genre");
-    expect(res.body).toHaveProperty("location");
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("should return an error if required fields are missing", async () => {
-    const res = await request(app).post("/venues").send({
-      name: "Incomplete Venue",
-      // Missing address, phone, price, genre, and location
-    });
+  test("GET /venues - should return a list of venues", async () => {
+    const mockVenues = [
+      {
+        _id: "1",
+        name: "Venue 1",
+        address: "Address 1",
+        phone: "12345",
+        price: "100",
+        genre: "Rock",
+        location: "NY",
+      },
+      {
+        _id: "2",
+        name: "Venue 2",
+        address: "Address 2",
+        phone: "67890",
+        price: "200",
+        genre: "Jazz",
+        location: "LA",
+      },
+    ];
+    VenueModel.find.mockResolvedValue(mockVenues);
 
-    expect(res.statusCode).toBe(400); // Bad Request
-    expect(res.body).toHaveProperty(
-      "message",
-      expect.stringContaining("Venue validation failed")
-    );
+    const response = await request(app).get("/venues");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockVenues);
+  });
+
+  test("GET /venues/:venueId - should return a single venue", async () => {
+    const mockVenue = {
+      _id: "1",
+      name: "Venue 1",
+      address: "Address 1",
+      phone: "12345",
+      price: "100",
+      genre: "Rock",
+      location: "NY",
+    };
+    VenueModel.findById.mockResolvedValue(mockVenue);
+
+    const response = await request(app).get("/venues/1");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockVenue);
+  });
+
+  test("POST /venues - should create a new venue", async () => {
+    const newVenue = {
+      name: "Venue 3",
+      address: "Address 3",
+      phone: "54321",
+      price: "150",
+      genre: "Pop",
+      location: "Chicago",
+    };
+    const savedVenue = { _id: "3", ...newVenue };
+    VenueModel.create.mockResolvedValue(savedVenue);
+
+    const response = await request(app).post("/venues").send(newVenue);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(savedVenue);
+  });
+
+  test("PATCH /venues/:venueId - should update a venue", async () => {
+    const updatedVenue = {
+      _id: "1",
+      name: "Updated Venue 1",
+      address: "Updated Address 1",
+    };
+    VenueModel.findByIdAndUpdate.mockResolvedValue(updatedVenue);
+
+    const response = await request(app)
+      .patch("/venues/1")
+      .send({ name: "Updated Venue 1", address: "Updated Address 1" });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(updatedVenue);
+  });
+
+  test("DELETE /venues/:venueId - should delete a venue", async () => {
+    const deletedVenue = { _id: "1", name: "Venue 1" };
+    VenueModel.findByIdAndDelete.mockResolvedValue(deletedVenue);
+
+    const response = await request(app).delete("/venues/1");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(deletedVenue);
   });
 });
