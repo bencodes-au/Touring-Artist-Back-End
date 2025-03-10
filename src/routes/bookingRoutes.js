@@ -10,6 +10,7 @@ const {
   createBooking,
   updateBooking,
   deleteBooking,
+  getBookingsForUser,
 } = require("../controllers/bookingControllers");
 
 // GET all Bookings (Protected)
@@ -104,6 +105,22 @@ bookingRouter.delete(
     } catch (error) {
       console.error("Error in DELETE /bookings/:bookingId:", error.message);
       response.status(500).json({ error: "Failed to delete booking" });
+    }
+  }
+);
+
+// Get bookings for User
+bookingRouter.get(
+  "/user/:userId",
+  authenticationToken,
+  async (request, response) => {
+    try {
+      const bookings = await getBookingsForUser(request.params.userId);
+
+      response.status(200).json(bookings);
+    } catch (error) {
+      console.error("Error in GET /bookings/user/:userId:", error.message);
+      response.status(500).json({ error: "Failed to retrieve bookings" });
     }
   }
 );

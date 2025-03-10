@@ -1,6 +1,4 @@
 const BookingModel = require("../models/booking");
-const User = require("../models/user");
-const Venue = require("../models/venue");
 
 async function getBookings() {
   try {
@@ -69,10 +67,28 @@ async function deleteBooking(bookingId) {
   }
 }
 
+async function getBookingsForUser(userId) {
+  try {
+    const bookings = await BookingModel.find({ user: userId })
+      .populate("venue")
+      .populate("artist")
+      .exec();
+
+    if (!bookings || bookings.length === 0) {
+      throw new Error("No bookings found for this user");
+    }
+    return bookings;
+  } catch (error) {
+    console.error("Error in getBookingsForUser:", error.message);
+    throw new Error(`Error retrieving bookings for user ${userId}`);
+  }
+}
+
 module.exports = {
   getBookings,
   getBooking,
   createBooking,
   updateBooking,
   deleteBooking,
+  getBookingsForUser,
 };
