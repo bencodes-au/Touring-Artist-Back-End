@@ -50,7 +50,7 @@ describe("User Authentication Routes", () => {
     expect(response.body.message).toBe("Email already in use");
   });
 
-  test("POST /users/login - should log in a user with correct credentials", async () => {
+  test("POST /users/login - should log in a user", async () => {
     const userCredentials = {
       email: "test@example.com",
       password: "password123",

@@ -1,5 +1,5 @@
 # Touring-Artist-Back-End
-Touring Arist is an application built for artists booking venues. Created as part of study at CoderAcademy with Tanya Chukau. 
+Touring Arist is an application built for artists booking venues. Created as part of study at CoderAcademy. 
 
 Explains relevance and impact of hardware/software (README)
 - Industry relevance of chosen tech

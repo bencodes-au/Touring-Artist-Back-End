@@ -2,7 +2,6 @@ const express = require("express");
 const bookingRouter = express.Router();
 
 const authenticationToken = require("../middleware/authMiddleware");
-const VenueModel = require("../models/venue");
 
 const {
   getBookings,
