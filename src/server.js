@@ -5,7 +5,8 @@ const userRouter = require("./routes/userRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
 const app = express();
 
-const corsOptions = app.use(express.json());
+app.use(express.json());
+
 app.use(
   cors({
     origin: "https://touringartist.netlify.app",
