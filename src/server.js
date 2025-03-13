@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://touringartist.netlify.app",
+    origin: ["https://touringartist.netlify.app", "http://localhost:5173"],
   })
 );
 
