@@ -8,8 +8,7 @@ const app = express();
 const corsOptions = app.use(express.json());
 app.use(
   cors({
-    origin: "https://touringartist.netlify.app/",
-    optionsSuccessStatus: 200,
+    origin: "https://touringartist.netlify.app",
   })
 );
 
