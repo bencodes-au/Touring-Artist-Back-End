@@ -2,9 +2,7 @@ const BookingModel = require("../models/booking");
 
 async function getBookings() {
   try {
-    const bookings = await BookingModel.find()
-      .populate("user")
-      .populate("venue");
+    const bookings = await BookingModel.find();
     return bookings;
   } catch (error) {
     console.error("Error in getBookings:", error.message);
@@ -14,16 +12,14 @@ async function getBookings() {
 
 async function getBooking(bookingId) {
   try {
-    const booking = await BookingModel.findById(bookingId)
-      .populate("user")
-      .populate("venue");
+    const booking = await BookingModel.findById(bookingId);
     if (!booking) {
       throw new Error("Booking not found");
     }
     return booking;
   } catch (error) {
     console.error("Error in getBooking:", error.message);
-    throw new Error(`Booking with id ${request.params.bookingId} not found`);
+    throw new Error(`Booking with id ${bookingId} not found`);
   }
 }
 
@@ -69,11 +65,7 @@ async function deleteBooking(bookingId) {
 
 async function getBookingsForUser(userId) {
   try {
-    const bookings = await BookingModel.find({ user: userId })
-      .populate("venue")
-      .populate("artist")
-      .exec();
-
+    const bookings = await BookingModel.find({ user: userId }).exec();
     if (!bookings || bookings.length === 0) {
       throw new Error("No bookings found for this user");
     }
