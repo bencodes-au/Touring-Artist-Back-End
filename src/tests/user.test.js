@@ -28,7 +28,7 @@ describe("User Authentication Routes", () => {
     const hashedPassword = "hashedpassword123";
     const mockUser = { _id: "1", ...newUser, password: hashedPassword };
 
-    UserModel.findOne.mockResolvedValue(null); // No existing user
+    UserModel.findOne.mockResolvedValue(null);
     bcrypt.hash.mockResolvedValue(hashedPassword);
     UserModel.create.mockResolvedValue(mockUser);
     jwt.sign.mockReturnValue("mockedToken");

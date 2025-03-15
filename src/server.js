@@ -24,6 +24,7 @@ app.get("/", (request, response) => {
   });
 });
 
+// database health
 app.get("/databaseHealth", (request, response) => {
   let databaseState = mongoose.connection.readyState;
   let databaseName = mongoose.connection.name;
